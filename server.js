@@ -1,19 +1,24 @@
-
 const express = require('express');
+const dotenv = require('dotenv');
+const DB = require('./config/mongodb.config');
+
+const app = express();
+dotenv.config();
+
 
 const app = express()
 const dotenv = require('dotenv')
 const DB = require('./config/mongodb.config');
 const profile_router = require('./routes/profile.routes');
 
-const DB_connect = DB.connect_to_mongodb
-const mongoose = DB.mongoose
 
-app.use(express.json())
-dotenv.config();
+app.use(express.json());
 
-DB_connect()
+app.use('/api', require('./routes/auth.routes'));
+app.use('/api/audio', require('./routes/audio.routes'));
+app.use('/api/admin', require('./routes/admin.routes'));
+
 
 app.use('/api/profile',profile_router)
 
-app.listen(4000 , ()=>{console.log("welcome to mongo db server")})
+app.listen(4000, () => { console.log("welcome to mongo db server"); });
