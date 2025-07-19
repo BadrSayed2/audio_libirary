@@ -18,8 +18,9 @@ const register_validation = [
 ];
 
 const login_validation = [
-    body('email').isEmail().withMessage('Invalid email format'),
-    body('password').notEmpty().withMessage('Password is required')
+    body('email').escape(),
+    body('password').escape()
 ];
 
-module.exports = { register_validation, login_validation, run_validation };
+
+module.exports = { register_validation, login_validation,run_validation };

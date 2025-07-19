@@ -1,10 +1,14 @@
 const User = require('../models/user.model');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
+const { matchedData } = require('express-validator');
 const jwt = require('jsonwebtoken');
+const redis_client = require('../config/redis.config');
+const { info_logger } = require('../utils/logger.util');
+
 
 const register = async (req, res, next) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password } = matchedData(req);
 
         const existing_user = await User.findOne({ email });
         if (existing_user) {
@@ -17,20 +21,12 @@ const register = async (req, res, next) => {
             name,
             email,
             password: hashed_password,
-            role,
-            profilePic: req.file ? req.file.path : undefined
+            profile_pic: req.file ? req?.file?.filename : undefined
         });
 
         res.status(201).json({
             success: true,
             message: "User registered successfully",
-            data: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                profilePic: user.profilePic
-            }
         });
 
     } catch (err) {
@@ -40,14 +36,17 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
-
+        const { email, password } = matchedData(req);
+        console.log(email , password);
+        
         const user = await User.findOne({ email });
+        
         if (!user) {
             return res.status(401).json({ success: false, message: "Invalid email or password" });
         }
 
         const is_match = await bcrypt.compare(password, user.password);
+
         if (!is_match) {
             return res.status(401).json({ success: false, message: "Invalid email or password" });
         }
@@ -69,4 +68,19 @@ const login = async (req, res, next) => {
     }
 };
 
-module.exports = { register, login };
+
+const serve_data = async (req,res)=>{
+    const cached_data = await redis_client.get('big_data')
+    if(cached_data){
+        info_logger.info("cache hit")
+        return res.json( {data : JSON.parse(cached_data) } )
+    }
+    info_logger.info("cache miss")
+    const response= await fetch('https://jsonplaceholder.typicode.com/photos')
+    const data = await response.json()
+    
+    redis_client.set('big_data' , JSON.stringify(data))
+    res.json({data})
+}
+
+module.exports = { register, login ,serve_data};

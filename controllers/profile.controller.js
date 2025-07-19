@@ -10,11 +10,13 @@ profile_controller.get_profile = async (req,res,next)=>{
     try{
 
         const user_id = req.user_id
-        const user = await user_model.findById(user_id).select("-_id -password")
+        const user = await user_model.findById(user_id).select("-_id -password -__v")
         if(!user){
             return res.status(404).json({err : "user not found"})
         }
-        
+        if(user?.profile_pic){
+            user.profile_pic = 'http://localhost:4000/uploads/profiles/' + user.profile_pic
+        }
         res.json({success : true  , user})
     }catch(e){
         next(e)
@@ -25,25 +27,48 @@ profile_controller.update_profile = async(req,res,next) =>{
     try{
         const user_id = req.user_id
         const errs = validationResult(req)
-        if(errs){
-            return res.status(401).json({err : errs})
+        
+        if(errs?.length > 0){
+            return res.status(401).json({err : errs.array()})
         }
         const new_user = matchedData(req)
-        const found_user = user_model.findById(user_id);
+        console.log(req.file.filename);
+        
+        
+        const found_user = await user_model.findById(user_id);
+        
+        
         if(!found_user){
             return res.status(404).json({err : "user not found"})
         }
-        if(new_user?.name){
-            found_user.name = new_user.name
+        
+        console.log(req?.body?.name);
+        
+        if(req?.body?.name){
+            found_user.name = req?.body?.name
         }
-        if(new_user?.profile_pic && found_user?.profile_pic){
-            await fs.unlink('../uploads/profiles/'+found_user?.profile_pic)
-            found_user.profile_pic = req.file.filename
+        
+        if(req.file && found_user?.profile_pic){
+            
+            await fs.unlink('./uploads/profiles/'+found_user?.profile_pic,(err)=>{
+                if(err){
+                    console.log(err);
+                    res.status(401).json({err:"couldn't update your profile"})
+                    
+                }
+            })
         }
+        found_user.profile_pic = req?.file?.filename
+        // console.log(found_user);
+        
         found_user.save()
         res.json({message: "user updated successfully"})
     }catch(e){
-        next(e)
+        console.log(e.message);
+        // console.log(2);
+        
+        res.json({err : "something went wrong"})
+        // next(e)
     }
 }
 

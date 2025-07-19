@@ -27,7 +27,7 @@ const audioSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     }
-}, { timestamps: true });
+});
 
 const Audio = mongoose.model('Audio', audioSchema);
 

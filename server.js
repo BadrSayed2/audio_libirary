@@ -1,23 +1,26 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const DB = require('./config/mongodb.config');
+const profile_router = require('./routes/profile.routes');
+const app = express()
 
-const app = express();
 dotenv.config();
 
-
-const app = express()
-const dotenv = require('dotenv')
-const DB = require('./config/mongodb.config');
-const profile_router = require('./routes/profile.routes');
-
-
 app.use(express.json());
+app.use(express.urlencoded({extended : true}))
+const DB = require('./config/mongodb.config');
+const morgan = require('morgan');
+const { info_logger } = require('./utils/logger.util');
+const { info_logging } = require('./middlewares/logging.middlewate');
 
+
+DB.connect_to_mongodb()
+
+app.use(info_logging)
+
+app.use('/uploads',express.static(__dirname +'/uploads'))
 app.use('/api', require('./routes/auth.routes'));
 app.use('/api/audio', require('./routes/audio.routes'));
-app.use('/api/admin', require('./routes/admin.routes'));
-
+// app.use('/api/admin', require('./routes/admin.routes'));
 
 app.use('/api/profile',profile_router)
 
