@@ -16,7 +16,9 @@ const { info_logging } = require('./middlewares/logging.middlewate');
 DB.connect_to_mongodb()
 
 app.use(info_logging)
-
+app.get('/',(req,res)=>{
+    res.send("hello to audio app")
+})
 app.use('/uploads',express.static(__dirname +'/uploads'))
 app.use('/api', require('./routes/auth.routes'));
 app.use('/api/audio', require('./routes/audio.routes'));
