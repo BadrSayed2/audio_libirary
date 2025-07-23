@@ -7,5 +7,5 @@ const { profile_upload } = require('../config/multer.config');
 router.post('/register', profile_upload.single('profilePic'), register_validation, run_validation, register);
 router.post('/login', login_validation, run_validation, login);
 
-router.get('/data',serve_data)
+// router.get('/data',serve_data)
 module.exports = router;

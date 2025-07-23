@@ -2,7 +2,7 @@ const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const { matchedData } = require('express-validator');
 const jwt = require('jsonwebtoken');
-const redis_client = require('../config/redis.config');
+// const redis_client = require('../config/redis.config');
 const { info_logger } = require('../utils/logger.util');
 
 
@@ -69,18 +69,18 @@ const login = async (req, res, next) => {
 };
 
 
-const serve_data = async (req,res)=>{
-    const cached_data = await redis_client.get('big_data')
-    if(cached_data){
-        info_logger.info("cache hit")
-        return res.json( {data : JSON.parse(cached_data) } )
-    }
-    info_logger.info("cache miss")
-    const response= await fetch('https://jsonplaceholder.typicode.com/photos')
-    const data = await response.json()
+// const serve_data = async (req,res)=>{
+//     const cached_data = await redis_client.get('big_data')
+//     if(cached_data){
+//         info_logger.info("cache hit")
+//         return res.json( {data : JSON.parse(cached_data) } )
+//     }
+//     info_logger.info("cache miss")
+//     const response= await fetch('https://jsonplaceholder.typicode.com/photos')
+//     const data = await response.json()
     
-    redis_client.set('big_data' , JSON.stringify(data))
-    res.json({data})
-}
+//     redis_client.set('big_data' , JSON.stringify(data))
+//     res.json({data})
+// }
 
-module.exports = { register, login ,serve_data};
+module.exports = { register, login };
