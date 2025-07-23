@@ -4,7 +4,7 @@ const connect_to_mongodb = ()=>{
     .then(()=>{console.log("database connectd")})
     .catch(()=>{
         // console.log("database connection failed");
-        error_logger.error("error log :" + e.message)
+        // error_logger.error("error log :" + e.message)
     })
 }
 

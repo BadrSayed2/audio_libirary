@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const { matchedData } = require('express-validator');
 const jwt = require('jsonwebtoken');
 // const redis_client = require('../config/redis.config');
-const { info_logger } = require('../utils/logger.util');
+// const { info_logger } = require('../utils/logger.util');
 
 
 const register = async (req, res, next) => {

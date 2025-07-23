@@ -9,13 +9,13 @@ app.use(express.json());
 app.use(express.urlencoded({extended : true}))
 const DB = require('./config/mongodb.config');
 const morgan = require('morgan');
-const { info_logger } = require('./utils/logger.util');
-const { info_logging } = require('./middlewares/logging.middlewate');
+// const { info_logger } = require('./utils/logger.util');
+// const { info_logging } = require('./middlewares/logging.middlewate');
 
 
 DB.connect_to_mongodb()
 
-app.use(info_logging)
+// app.use(info_logging)
 app.get('/',(req,res)=>{
     res.send("hello to audio app")
 })
